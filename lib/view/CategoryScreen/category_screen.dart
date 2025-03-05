@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
+import 'package:liquor_brooze_user/view/CategoryScreen/category_items_screen.dart';
 import 'package:liquor_brooze_user/viewmodel/category_screen_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,7 @@ class CategoryScreen extends StatelessWidget {
         Expanded(
           flex: 1,
           child: Container(
-            padding: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.only(top: 10, left: 4, right: 4),
             decoration: BoxDecoration(
               color: AppColor.lightTextColor,
               boxShadow: [
@@ -28,43 +29,69 @@ class CategoryScreen extends StatelessWidget {
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
-                children: categoryScreenProvider.categoryScreenCategoryItem.map(
-                  (item) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            item.imageUrl,
-                            height: 60,
-                            width: 80,
-                            fit: BoxFit.fill,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.image_not_supported, size: 50),
+                children: List.generate(
+                  categoryScreenProvider.categoryScreenCategoryItem.length,
+                  (index) {
+                    final item = categoryScreenProvider
+                        .categoryScreenCategoryItem[index];
+                    return InkWell(
+                      onTap: () {
+                        categoryScreenProvider.setSelectedIndex(index);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: categoryScreenProvider.selectedIndex == index
+                              ? Colors.white // Highlight selected
+                              : Colors.transparent,
+                          border: Border(
+                            left: BorderSide(
+                              color:
+                                  categoryScreenProvider.selectedIndex == index
+                                      ? Colors.red // Indicator for selection
+                                      : Colors.transparent,
+                              width: 4,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          item.title,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Monserat',
-                          ),
-                          textAlign: TextAlign.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                item.imageUrl,
+                                height: 60,
+                                width: 80,
+                                fit: BoxFit.fill,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.image_not_supported,
+                                        size: 50),
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              item.title,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Monserat',
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     );
                   },
-                ).toList(),
+                ),
               ),
             ),
           ),
         ),
         Expanded(
-          flex: 3,
-          child: Column(),
+          flex: 4,
+          child: CategoryItemsScreen(),
         ),
       ],
     );

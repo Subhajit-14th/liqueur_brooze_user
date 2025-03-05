@@ -26,4 +26,12 @@ class CategoryScreenProvider extends ChangeNotifier {
   ];
   List<CategoryScreenItem> get categoryScreenCategoryItem =>
       _categoryScreenCategoryItem;
+
+  int _selectedIndex = 0;
+  int get selectedIndex => _selectedIndex;
+
+  void setSelectedIndex(int index) {
+    _selectedIndex = index;
+    notifyListeners();
+  }
 }

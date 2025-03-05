@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
 import 'package:liquor_brooze_user/view/AccountScreen/account_screen.dart';
+import 'package:liquor_brooze_user/view/CartScreen/cart_screen.dart';
 import 'package:liquor_brooze_user/view/CategoryScreen/category_screen.dart';
 import 'package:liquor_brooze_user/view/HomeScreen/home_screen.dart';
 import 'package:liquor_brooze_user/viewmodel/root_screen_provider.dart';
@@ -41,7 +42,7 @@ class RootScreen extends StatelessWidget {
         HomeScreen(),
         CategoryScreen(),
         AccountScreen(),
-        Container(color: Colors.green),
+        CartScreen(),
       ][rootScreenProvider.currentScreenIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: rootScreenProvider.currentScreenIndex,
