@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:liquor_brooze_user/root_screen.dart';
 import 'package:liquor_brooze_user/services/services/hive_database.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
+import 'package:liquor_brooze_user/view/Authentication/login_screen.dart';
+import 'package:liquor_brooze_user/viewmodel/authentication_provider.dart';
 import 'package:liquor_brooze_user/viewmodel/category_screen_provider.dart';
 import 'package:liquor_brooze_user/viewmodel/home_screen_provider.dart';
 import 'package:liquor_brooze_user/viewmodel/root_screen_provider.dart';
@@ -23,6 +25,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
         ChangeNotifierProvider(create: (context) => RootScreenProvider()),
         ChangeNotifierProvider(create: (context) => HomeScreenProvider()),
         ChangeNotifierProvider(create: (context) => CategoryScreenProvider()),
@@ -45,7 +48,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primaryColor),
         useMaterial3: true,
       ),
-      home: RootScreen(),
+      home: Consumer<AuthenticationProvider>(
+          builder: (context, authenticationProvider, child) {
+        return authenticationProvider.isUserLoggedIn
+            ? RootScreen()
+            : LoginScreen();
+      }),
     );
   }
 }
