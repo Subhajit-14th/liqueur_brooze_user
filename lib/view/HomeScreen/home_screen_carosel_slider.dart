@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
@@ -30,15 +31,13 @@ class HomeScreenCaroselSlider extends StatelessWidget {
             items: homeScreenProvider.caroselLiquorItems.map((item) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  item,
-                  fit: BoxFit.fill,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child:
-                          Icon(Icons.broken_image, size: 50, color: Colors.red),
-                    );
-                  },
+                child: CachedNetworkImage(
+                  imageUrl: item,
+                  placeholder: (context, url) => CircularProgressIndicator(
+                    color: AppColor.primaryColor,
+                  ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  fit: BoxFit.cover,
                 ),
               );
             }).toList(),

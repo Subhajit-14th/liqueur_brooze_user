@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liquor_brooze_user/model/category_screen_model/category_items_model.dart';
 import 'package:liquor_brooze_user/model/category_screen_model/category_screen_items_model.dart';
 
 class CategoryScreenProvider extends ChangeNotifier {
@@ -33,5 +34,72 @@ class CategoryScreenProvider extends ChangeNotifier {
   void setSelectedIndex(int index) {
     _selectedIndex = index;
     notifyListeners();
+  }
+
+  final List<CategoryItemsModel> _categoryItems = [
+    CategoryItemsModel(
+      itemImageUrl:
+          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
+      itemName: "Budweiser",
+      itemPrice: "₹ 180",
+      itemDescription:
+          "Budweiser is a medium-bodied, flavorful, crisp American-style lager.",
+      itemQuantity: 0,
+    ),
+    CategoryItemsModel(
+      itemImageUrl:
+          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
+      itemName: "Carlsberg",
+      itemPrice: "₹ 160",
+      itemDescription:
+          "Carlsberg is a medium-bodied, flavorful, crisp American-style lager.",
+      itemQuantity: 0,
+    ),
+    CategoryItemsModel(
+      itemImageUrl:
+          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
+      itemName: "Old Monk",
+      itemPrice: "₹ 180",
+      itemDescription:
+          "Old Monk is a medium-bodied, flavorful, crisp American-style lager.",
+      itemQuantity: 0,
+    ),
+    CategoryItemsModel(
+      itemImageUrl:
+          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
+      itemName: "Magic Moment",
+      itemPrice: "₹ 320",
+      itemDescription:
+          "Magic Moment is a medium-bodied, flavorful, crisp American-style lager.",
+      itemQuantity: 0,
+    ),
+  ];
+  List<CategoryItemsModel> get categoryItems => _categoryItems;
+
+  // Function to increase quantity
+  void increaseQuantity(int index) {
+    _categoryItems[index].itemQuantity++;
+    notifyListeners();
+  }
+
+  // Function to decrease quantity
+  void decreaseQuantity(int index) {
+    if (_categoryItems[index].itemQuantity > 0) {
+      _categoryItems[index].itemQuantity--;
+      notifyListeners();
+    }
+  }
+
+  // Function to add item to cart (if quantity is 0, set to 1)
+  void addToCart(int index) {
+    if (_categoryItems[index].itemQuantity == 0) {
+      _categoryItems[index].itemQuantity = 1;
+    }
+    notifyListeners();
+  }
+
+  /// Calculate the total quantity in the cart
+  int get totalCartQuantity {
+    return categoryItems.fold(0, (sum, item) => sum + item.itemQuantity);
   }
 }

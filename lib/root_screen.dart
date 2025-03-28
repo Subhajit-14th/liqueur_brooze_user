@@ -54,7 +54,7 @@ class RootScreen extends StatelessWidget {
         selectedItemColor: AppColor.lightTextColor, // Active tab color
         unselectedItemColor: AppColor.darkTextColor, // Inactive tab color
         showUnselectedLabels: true, // Show labels for inactive tabs
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home, color: Colors.white),
@@ -72,7 +72,10 @@ class RootScreen extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_outlined),
-            activeIcon: Icon(Icons.shopping_cart, color: Colors.white),
+            activeIcon: Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+            ),
             label: 'Cart',
           ),
         ],

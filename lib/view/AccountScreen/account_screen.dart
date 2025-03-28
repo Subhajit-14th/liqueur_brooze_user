@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
+import 'package:liquor_brooze_user/view/AccountScreen/Address/address_screen.dart';
+import 'package:liquor_brooze_user/view/AccountScreen/my_orders_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -37,11 +39,24 @@ class AccountScreen extends StatelessWidget {
           SizedBox(height: 20),
 
           // Profile Menu
-          _buildProfileOption(Icons.shopping_cart, "My Orders"),
-          _buildProfileOption(Icons.favorite, "Wishlist"),
-          _buildProfileOption(Icons.location_on, "Addresses"),
-          _buildProfileOption(Icons.settings, "Settings"),
-          _buildProfileOption(Icons.help, "Help & Support"),
+          InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MyOrdersScreen()));
+            },
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: _buildProfileOption(Icons.shopping_cart, "My Orders"),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AddressScreen()));
+            },
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: _buildProfileOption(Icons.location_on, "Addresses"),
+          ),
 
           // Logout Button
           SizedBox(height: 20),
@@ -77,11 +92,19 @@ class AccountScreen extends StatelessWidget {
 
   // Profile Menu Items
   Widget _buildProfileOption(IconData icon, String title) {
-    return Card(
+    return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      color: AppColor.lightTextColor,
+      decoration: BoxDecoration(
+        color: AppColor.lightTextColor,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: AppColor.darkTextColor.withAlpha(50),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
       child: ListTile(
         leading: Icon(icon, color: AppColor.secondaryColor),
         title: Text(
@@ -94,7 +117,7 @@ class AccountScreen extends StatelessWidget {
           ),
         ),
         trailing: Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
-        onTap: () {},
+        // onTap: () {},
       ),
     );
   }
