@@ -50,6 +50,7 @@ class HomeScreenCategoryItems extends StatelessWidget {
                   fontFamily: 'Monserat',
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 2,
               ),
             ],
           );
