@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:liquor_brooze_user/controller/home_controller.dart';
+import 'package:liquor_brooze_user/model/home_screen_model/home_api_res_model.dart';
 import 'package:liquor_brooze_user/model/home_screen_model/home_screen_category_item_model.dart';
 import 'package:liquor_brooze_user/model/home_screen_model/home_screen_favorite_items.dart';
 
@@ -6,39 +8,16 @@ class HomeScreenProvider extends ChangeNotifier {
   final TextEditingController _searchController = TextEditingController();
   TextEditingController get searchController => _searchController;
 
-  final List<String> _caroselLiquorItems = [
-    "https://5.imimg.com/data5/SELLER/Default/2024/10/458038011/SP/IC/JD/150979004/liquor-bottle-label.jpg",
-    "https://media.gettyimages.com/id/1658420093/photo/hand-of-a-man-refusing-red-wine-and-showing-car-keys-and-a-glass-of-water-on-a-table-at-home.jpg?s=612x612&w=gi&k=20&c=BK5NDgjlIVJ5FYnL6zQOKRt4pYfuXa3HTolZGyOnXaw=",
-    "https://media.istockphoto.com/id/929184960/video/empty-glasses-and-alcohol-drink-on-bar-counter-in-outdoor-party-at-night.jpg?s=640x640&k=20&c=luL5Ghf9TZjBCuSweuP1F7fcWUTIHZo-9e0BFeSGRGo=",
-    "https://thumbs.dreamstime.com/b/many-different-alcoholic-drinks-table-against-dark-background-213141054.jpg",
-  ];
+  List<String> _caroselLiquorItems = [];
   List<String> get caroselLiquorItems => _caroselLiquorItems;
 
+  HomeScreenProvider() {
+    getHomeData();
+  }
   int _activeIndex = 0;
   int get activeIndex => _activeIndex;
 
-  final List<CategoryItem> _homeScreenCategoryItem = [
-    CategoryItem("Beer",
-        "https://thumbs.dreamstime.com/b/bottles-famous-global-beer-brands-poznan-pol-mar-including-heineken-becks-bud-miller-corona-stella-artois-san-miguel-143170440.jpg"),
-    CategoryItem("Gin",
-        "https://www.foodandwine.com/thmb/FVY-2u029aSd8w306F1dyU8PgzE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Indias-Gin-Renaissance-Takes-the-Global-Stage-FT-BLOG0824-01-bf5784977b544be8b38c25b406b77425.jpg"),
-    CategoryItem("Vodka",
-        "https://assets.bonappetit.com/photos/663cdc3709730b874e26baad/4:3/w_4444,h_3333,c_limit/vodka-taste-test_LEDE_050824_0065_VOG_final.jpg"),
-    CategoryItem("Whiskey",
-        "https://theflaskandbarrel.com/wp-content/uploads/2023/07/whiskey-1024x628.jpg"),
-    CategoryItem("Tequila",
-        "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75"),
-    CategoryItem("Rum",
-        "https://brewsnspirits.in/images/articles/details/cover-story-old-monk-june-july-2020.jpg"),
-    CategoryItem("Brandy",
-        "https://prestigehaus.com/media/magefan_blog/best-budget-brandy-for-cooking-sipping-mixing-and-gifting.jpg"),
-    CategoryItem("Amaretto",
-        "https://www.disaronno.com/wp-content/uploads/hero-disaronno-mob.jpg"),
-    CategoryItem("Campari",
-        "https://assets.bonappetit.com/photos/5c59e88485716f2cc28c0e84/master/pass/Basically-Campari-Group.jpg"),
-    CategoryItem("Baileys",
-        "https://bestsips.com.au/wp-content/uploads/2024/11/12/baileys-chocolate-raspberry-martinis.jpg"),
-  ];
+  List<CategoryItem> _homeScreenCategoryItem = [];
   List<CategoryItem> get homeScreenCategoryItem => _homeScreenCategoryItem;
 
   final List<HomeScreenFavoriteItems> _homeScreenFavoriteItems = [
@@ -70,9 +49,71 @@ class HomeScreenProvider extends ChangeNotifier {
   List<HomeScreenFavoriteItems> get homeScreenFavoriteItems =>
       _homeScreenFavoriteItems;
 
+  bool _isHomeScreenLoad = false;
+  bool get isHomeScreenLoad => _isHomeScreenLoad;
+
+  /// Model and API Controller
+  HomeApiResModel _homeApiResModel = HomeApiResModel();
+  final HomeController _homeController = HomeController();
+
   /// change the index with carosel slider
   void updateIndex(int index) {
     _activeIndex = index;
     notifyListeners();
+  }
+
+  /// get home data
+  void getHomeData() async {
+    _isHomeScreenLoad = true;
+    notifyListeners();
+    debugPrint('This API function was hit');
+
+    _homeApiResModel = await _homeController.getHomeData();
+
+    if (_homeApiResModel.success == true) {
+      debugPrint('✅ API call successful');
+      _caroselLiquorItems.clear();
+
+      final dataList = _homeApiResModel.data;
+
+      if (dataList != null && dataList.isNotEmpty) {
+        for (var element in dataList) {
+          if (element.banners != null && element.banners!.isNotEmpty) {
+            _caroselLiquorItems = List.from(element.banners!);
+            debugPrint('🎯 Banners fetched: $_caroselLiquorItems');
+            break; // Stop after getting banners
+          }
+        }
+
+        _homeScreenCategoryItem.clear();
+        for (var element in dataList) {
+          if (element.categories != null && element.categories!.isNotEmpty) {
+            element.categories?.forEach((cat) {
+              debugPrint('Category: ${cat.catagoryname}');
+              _homeScreenCategoryItem.add(CategoryItem(
+                id: "${cat.sId}",
+                title: "${cat.catagoryname}",
+                imageUrl: "${cat.image}",
+              ));
+            });
+            debugPrint('🎯 Categories fetched: $_homeScreenCategoryItem');
+            break; // Stop after getting categories
+          }
+        }
+
+        if (_caroselLiquorItems.isEmpty) {
+          debugPrint('⚠️ No banners found in any data item.');
+        }
+      } else {
+        debugPrint('⚠️ Home API data list is empty.');
+      }
+
+      _isHomeScreenLoad = false;
+      notifyListeners();
+    } else {
+      _isHomeScreenLoad = false;
+      debugPrint('❌ API error: ${_homeApiResModel.message}');
+      notifyListeners();
+    }
   }
 }

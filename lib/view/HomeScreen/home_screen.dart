@@ -18,97 +18,104 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final homeScreenProvider = Provider.of<HomeScreenProvider>(context);
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 16),
+    return context.watch<HomeScreenProvider>().isHomeScreenLoad
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 16),
 
-          /// 🔍 Search Field
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              controller: homeScreenProvider.searchController,
-              decoration: InputDecoration(
-                hintText: "Search content",
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: homeScreenProvider.searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          homeScreenProvider.searchController.clear();
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
+                /// 🔍 Search Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TextField(
+                    controller: homeScreenProvider.searchController,
+                    decoration: InputDecoration(
+                      hintText: "Search content",
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon:
+                          homeScreenProvider.searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    homeScreenProvider.searchController.clear();
+                                  },
+                                )
+                              : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                    ),
+                    onChanged: (value) {},
+                  ),
                 ),
-                filled: true,
-                fillColor: Colors.grey[200],
-              ),
-              onChanged: (value) {},
-            ),
-          ),
-          SizedBox(height: 16),
+                SizedBox(height: 16),
 
-          /// 📌 CarouselSlider is Visible
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: HomeScreenCaroselSlider(),
-          ),
-          SizedBox(height: 16),
+                /// 📌 CarouselSlider is Visible
+                if (homeScreenProvider.caroselLiquorItems.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: HomeScreenCaroselSlider(),
+                  ),
+                  SizedBox(height: 16),
+                ],
 
-          /// Merquee Text
-          Container(
-            height: 25,
-            decoration: BoxDecoration(color: AppColor.darkTextColor),
-            child: Center(
-              child: Marquee(
-                text:
-                    '100% GENUINE BRANDS  +  PREMIUM FINDS  +  REAL WHISKY  +',
-                style: TextStyle(
-                  color: AppColor.lightTextColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Monserat',
+                /// Merquee Text
+                Container(
+                  height: 25,
+                  decoration: BoxDecoration(color: AppColor.darkTextColor),
+                  child: Center(
+                    child: Marquee(
+                      text:
+                          '100% GENUINE BRANDS  +  PREMIUM FINDS  +  REAL WHISKY  +',
+                      style: TextStyle(
+                        color: AppColor.lightTextColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Monserat',
+                      ),
+                      scrollAxis: Axis.horizontal,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      blankSpace: 10,
+                      velocity: 50,
+                      pauseAfterRound: Duration(seconds: 1),
+                      startPadding: 10.0,
+                      accelerationDuration: Duration(seconds: 1),
+                      accelerationCurve: Curves.linear,
+                      decelerationDuration: Duration(seconds: 1),
+                      decelerationCurve: Curves.easeOut,
+                    ),
+                  ),
                 ),
-                scrollAxis: Axis.horizontal,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                blankSpace: 10,
-                velocity: 50,
-                pauseAfterRound: Duration(seconds: 1),
-                startPadding: 10.0,
-                accelerationDuration: Duration(seconds: 1),
-                accelerationCurve: Curves.linear,
-                decelerationDuration: Duration(seconds: 1),
-                decelerationCurve: Curves.easeOut,
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
+                SizedBox(height: 10),
 
-          /// Category Items
-          HomeScreenCategoryItems(),
+                /// Category Items
+                HomeScreenCategoryItems(),
 
-          /// Favorite brands for you
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Text(
-              'Favorite brands for you',
-              style: TextStyle(
-                color: AppColor.darkTextColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Monserat',
-              ),
+                /// Favorite brands for you
+                // Padding(
+                //   padding: const EdgeInsets.only(left: 16),
+                //   child: Text(
+                //     'Favorite brands for you',
+                //     style: TextStyle(
+                //       color: AppColor.darkTextColor,
+                //       fontSize: 18,
+                //       fontWeight: FontWeight.bold,
+                //       fontFamily: 'Monserat',
+                //     ),
+                //   ),
+                // ),
+                // HomeScreenFavoriteBrands(),
+                // SizedBox(height: 10),
+              ],
             ),
-          ),
-          HomeScreenFavoriteBrands(),
-          SizedBox(height: 10),
-        ],
-      ),
-    );
+          );
   }
 }
