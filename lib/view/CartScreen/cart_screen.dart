@@ -161,7 +161,7 @@ class CartScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.2),
+                                color: Colors.green.withAlpha(50),
                                 borderRadius: BorderRadius.circular(4)),
                             child: const Text(
                               '80% OFF',
