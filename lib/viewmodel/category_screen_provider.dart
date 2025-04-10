@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:liquor_brooze_user/controller/category_controller.dart';
 import 'package:liquor_brooze_user/model/category_screen_model/category_items_model.dart';
 import 'package:liquor_brooze_user/model/category_screen_model/category_screen_items_model.dart';
+import 'package:liquor_brooze_user/model/category_screen_model/product_list_api_res_model.dart';
+import 'package:provider/provider.dart';
 
 class CategoryScreenProvider extends ChangeNotifier {
   final List<CategoryScreenItem> _categoryScreenCategoryItem = [
@@ -36,44 +39,7 @@ class CategoryScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  final List<CategoryItemsModel> _categoryItems = [
-    CategoryItemsModel(
-      itemImageUrl:
-          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
-      itemName: "Budweiser",
-      itemPrice: "₹ 180",
-      itemDescription:
-          "Budweiser is a medium-bodied, flavorful, crisp American-style lager.",
-      itemQuantity: 0,
-    ),
-    CategoryItemsModel(
-      itemImageUrl:
-          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
-      itemName: "Carlsberg",
-      itemPrice: "₹ 160",
-      itemDescription:
-          "Carlsberg is a medium-bodied, flavorful, crisp American-style lager.",
-      itemQuantity: 0,
-    ),
-    CategoryItemsModel(
-      itemImageUrl:
-          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
-      itemName: "Old Monk",
-      itemPrice: "₹ 180",
-      itemDescription:
-          "Old Monk is a medium-bodied, flavorful, crisp American-style lager.",
-      itemQuantity: 0,
-    ),
-    CategoryItemsModel(
-      itemImageUrl:
-          "https://www.deleontequila.com/_next/image?url=%2Frecipe%2Fclassique-anejo-lifestyle.jpg&w=3840&q=75",
-      itemName: "Magic Moment",
-      itemPrice: "₹ 320",
-      itemDescription:
-          "Magic Moment is a medium-bodied, flavorful, crisp American-style lager.",
-      itemQuantity: 0,
-    ),
-  ];
+  List<CategoryItemsModel> _categoryItems = [];
   List<CategoryItemsModel> get categoryItems => _categoryItems;
 
   // Function to increase quantity
@@ -101,5 +67,35 @@ class CategoryScreenProvider extends ChangeNotifier {
   /// Calculate the total quantity in the cart
   int get totalCartQuantity {
     return categoryItems.fold(0, (sum, item) => sum + item.itemQuantity);
+  }
+
+  ProductListApiResModel productListApiResModel = ProductListApiResModel();
+  CategoryController _categoryController = CategoryController();
+
+  bool _isProdctLoaded = false;
+  bool get isProdctLoaded => _isProdctLoaded;
+
+  /// get product list
+  void getProductList(categpryId) async {
+    _isProdctLoaded = true;
+    notifyListeners();
+    productListApiResModel =
+        await _categoryController.getProductList(categpryId);
+    if (productListApiResModel.success == true) {
+      _categoryItems.clear();
+      for (var item in productListApiResModel.products!) {
+        _categoryItems.add(CategoryItemsModel(
+            itemImageUrl: item.productImage ?? '',
+            itemName: item.productName ?? '',
+            itemPrice: item.regulerPrice ?? '',
+            itemDescription: item.description ?? '',
+            itemQuantity: 0));
+      }
+      _isProdctLoaded = false;
+    } else {
+      debugPrint('Product List API Error: ${productListApiResModel.message}');
+      _isProdctLoaded = false;
+    }
+    notifyListeners();
   }
 }

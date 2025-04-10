@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
 import 'package:liquor_brooze_user/view/HomeScreen/home_screen_carosel_slider.dart';
 import 'package:liquor_brooze_user/view/HomeScreen/home_screen_category_items.dart';
-import 'package:liquor_brooze_user/view/HomeScreen/home_screen_favorite_brands.dart';
 import 'package:liquor_brooze_user/viewmodel/home_screen_provider.dart';
 import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';

@@ -3,18 +3,59 @@ import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
 import 'package:liquor_brooze_user/utlis/widgets/common_button.dart';
 import 'package:liquor_brooze_user/view/CategoryScreen/category_details.dart';
 import 'package:liquor_brooze_user/viewmodel/category_screen_provider.dart';
+import 'package:liquor_brooze_user/viewmodel/home_screen_provider.dart';
+import 'package:liquor_brooze_user/viewmodel/root_screen_provider.dart';
 import 'package:provider/provider.dart';
 
-class CategoryItemsScreen extends StatelessWidget {
+class CategoryItemsScreen extends StatefulWidget {
   const CategoryItemsScreen({super.key});
+
+  @override
+  State<CategoryItemsScreen> createState() => _CategoryItemsScreenState();
+}
+
+class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () {
+        debugPrint(
+            'My selected Index: ${context.read<RootScreenProvider>().currentScreenIndex}');
+        context.read<CategoryScreenProvider>().getProductList(context
+            .read<HomeScreenProvider>()
+            .homeScreenCategoryItem[
+                context.read<CategoryScreenProvider>().selectedIndex]
+            .id);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 1.85;
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 1.6;
     final double itemWidth = size.width / 1.8;
     return Consumer<CategoryScreenProvider>(
         builder: (context, categoryScreenProvider, child) {
+      if (categoryScreenProvider.isProdctLoaded) {
+        return const Center(
+          child: CircularProgressIndicator(
+            color: AppColor.primaryColor,
+          ),
+        );
+      } else if (categoryScreenProvider.categoryItems.isEmpty) {
+        return const Center(
+          child: Text(
+            "No Product Found",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColor.primaryColor,
+            ),
+          ),
+        );
+      }
       return GridView.builder(
         itemCount: categoryScreenProvider.categoryItems.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

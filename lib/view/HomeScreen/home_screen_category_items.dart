@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:liquor_brooze_user/viewmodel/category_screen_provider.dart';
 import 'package:liquor_brooze_user/viewmodel/home_screen_provider.dart';
+import 'package:liquor_brooze_user/viewmodel/root_screen_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreenCategoryItems extends StatelessWidget {
@@ -27,32 +29,38 @@ class HomeScreenCategoryItems extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  homeScreenProvider.homeScreenCategoryItem[index].imageUrl,
-                  height: 60,
-                  width: 80,
-                  fit: BoxFit.fill,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.image_not_supported, size: 50),
+          return InkWell(
+            onTap: () {
+              context.read<RootScreenProvider>().setScreenIndex(1);
+              context.read<CategoryScreenProvider>().setSelectedIndex(index);
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    homeScreenProvider.homeScreenCategoryItem[index].imageUrl,
+                    height: 60,
+                    width: 80,
+                    fit: BoxFit.fill,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.image_not_supported, size: 50),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                homeScreenProvider.homeScreenCategoryItem[index].title,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Monserat',
+                const SizedBox(height: 5),
+                Text(
+                  homeScreenProvider.homeScreenCategoryItem[index].title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Monserat',
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
