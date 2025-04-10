@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
 import 'package:liquor_brooze_user/view/CategoryScreen/category_items_screen.dart';
 import 'package:liquor_brooze_user/viewmodel/category_screen_provider.dart';
+import 'package:liquor_brooze_user/viewmodel/home_screen_provider.dart';
 import 'package:provider/provider.dart';
 
-class CategoryScreen extends StatelessWidget {
+class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key});
 
+  @override
+  State<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final categoryScreenProvider = Provider.of<CategoryScreenProvider>(context);
@@ -30,13 +36,18 @@ class CategoryScreen extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: List.generate(
-                  categoryScreenProvider.categoryScreenCategoryItem.length,
+                  context
+                      .read<HomeScreenProvider>()
+                      .homeScreenCategoryItem
+                      .length,
                   (index) {
-                    final item = categoryScreenProvider
-                        .categoryScreenCategoryItem[index];
+                    final item = context
+                        .read<HomeScreenProvider>()
+                        .homeScreenCategoryItem[index];
                     return InkWell(
                       onTap: () {
                         categoryScreenProvider.setSelectedIndex(index);
+                        categoryScreenProvider.getProductList(item.id);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),

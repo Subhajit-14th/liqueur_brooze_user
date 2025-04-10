@@ -4,6 +4,7 @@ import 'package:liquor_brooze_user/view/AccountScreen/account_screen.dart';
 import 'package:liquor_brooze_user/view/CartScreen/cart_screen.dart';
 import 'package:liquor_brooze_user/view/CategoryScreen/category_screen.dart';
 import 'package:liquor_brooze_user/view/HomeScreen/home_screen.dart';
+import 'package:liquor_brooze_user/viewmodel/category_screen_provider.dart';
 import 'package:liquor_brooze_user/viewmodel/root_screen_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +49,9 @@ class RootScreen extends StatelessWidget {
         currentIndex: rootScreenProvider.currentScreenIndex,
         onTap: (index) {
           rootScreenProvider.setScreenIndex(index);
+          if (index == 1) {
+            context.read<CategoryScreenProvider>().setSelectedIndex(0);
+          }
         },
         backgroundColor: AppColor.primaryColor, // Dark background
         type: BottomNavigationBarType.fixed, // Ensures all labels are visible
