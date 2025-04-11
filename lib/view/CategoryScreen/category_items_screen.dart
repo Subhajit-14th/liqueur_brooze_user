@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
 import 'package:liquor_brooze_user/utlis/widgets/common_button.dart';
 import 'package:liquor_brooze_user/view/CategoryScreen/category_details.dart';
@@ -34,7 +35,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 1.6;
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 1.7;
     final double itemWidth = size.width / 1.8;
     return Consumer<CategoryScreenProvider>(
         builder: (context, categoryScreenProvider, child) {
@@ -73,15 +74,8 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => CategoryDetailsScreen(
-                            index: index,
-                            productName: categoryScreenProvider
-                                .categoryItems[index].itemName,
-                            productPrice: categoryScreenProvider
-                                .categoryItems[index].itemPrice,
-                            productImageUrl: categoryScreenProvider
-                                .categoryItems[index].itemImageUrl,
-                            productQuantity: categoryScreenProvider
-                                .categoryItems[index].itemQuantity,
+                            productId:
+                                categoryScreenProvider.categoryItems[index].id,
                           )));
             },
             child: Container(
@@ -99,7 +93,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product Image
+                  /// Product Image
                   ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
@@ -107,18 +101,19 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                     ),
                     child: Image.network(
                       categoryScreenProvider.categoryItems[index].itemImageUrl,
-                      height: 160,
+                      height: 150,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
                   ),
                   SizedBox(height: 8),
 
-                  // Product Name
+                  /// Product Name
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
                       categoryScreenProvider.categoryItems[index].itemName,
+                      maxLines: 1,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -127,22 +122,19 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                     ),
                   ),
 
-                  // Product Description
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Text(
-                      categoryScreenProvider
-                          .categoryItems[index].itemDescription,
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        fontFamily: 'Monserat',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                  /// Product Description
+                  Html(
+                    data: categoryScreenProvider
+                        .categoryItems[index].itemDescription,
+                    style: {
+                      "body": Style(
+                          fontSize: FontSize(12),
+                          color: Colors.grey[600],
+                          fontFamily: 'Monserat',
+                          maxLines: 2),
+                    },
                   ),
-                  SizedBox(height: 4),
+                  // SizedBox(height: 0),
 
                   // Price Section
                   Padding(
@@ -150,7 +142,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                     child: Row(
                       children: [
                         Text(
-                          "₹210",
+                          "£ ${categoryScreenProvider.categoryItems[index].regulerPrice}",
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
@@ -159,7 +151,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                         ),
                         SizedBox(width: 4),
                         Text(
-                          categoryScreenProvider.categoryItems[index].itemPrice,
+                          "£ ${categoryScreenProvider.categoryItems[index].discountPrice}",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,

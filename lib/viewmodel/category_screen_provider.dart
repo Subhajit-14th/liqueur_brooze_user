@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:liquor_brooze_user/controller/category_controller.dart';
+import 'package:liquor_brooze_user/model/category_screen_model/category_details_model.dart';
 import 'package:liquor_brooze_user/model/category_screen_model/category_items_model.dart';
 import 'package:liquor_brooze_user/model/category_screen_model/category_screen_items_model.dart';
 import 'package:liquor_brooze_user/model/category_screen_model/product_list_api_res_model.dart';
@@ -70,10 +71,15 @@ class CategoryScreenProvider extends ChangeNotifier {
   }
 
   ProductListApiResModel productListApiResModel = ProductListApiResModel();
+  ProductDetailsApiResModel productDetailsApiResModel =
+      ProductDetailsApiResModel();
   CategoryController _categoryController = CategoryController();
 
   bool _isProdctLoaded = false;
   bool get isProdctLoaded => _isProdctLoaded;
+
+  bool _isProdctDetailsLoad = false;
+  bool get isProdctDetailsLoad => _isProdctDetailsLoad;
 
   /// get product list
   void getProductList(categpryId) async {
@@ -85,9 +91,11 @@ class CategoryScreenProvider extends ChangeNotifier {
       _categoryItems.clear();
       for (var item in productListApiResModel.products!) {
         _categoryItems.add(CategoryItemsModel(
+            id: item.sId ?? '',
             itemImageUrl: item.productImage ?? '',
             itemName: item.productName ?? '',
-            itemPrice: item.regulerPrice ?? '',
+            regulerPrice: item.regulerPrice ?? '',
+            discountPrice: item.discountPrice ?? '',
             itemDescription: item.description ?? '',
             itemQuantity: 0));
       }
@@ -97,5 +105,17 @@ class CategoryScreenProvider extends ChangeNotifier {
       _isProdctLoaded = false;
     }
     notifyListeners();
+  }
+
+  /// get product details
+  void getProductDetails(productId) async {
+    _isProdctDetailsLoad = true;
+    notifyListeners();
+    productDetailsApiResModel =
+        await _categoryController.getProductDetails(productId);
+    if (productDetailsApiResModel.success == true) {
+      _isProdctDetailsLoad = false;
+      notifyListeners();
+    }
   }
 }

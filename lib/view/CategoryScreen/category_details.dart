@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:liquor_brooze_user/utlis/assets/app_colors.dart';
 import 'package:liquor_brooze_user/utlis/widgets/common_button.dart';
 import 'package:liquor_brooze_user/viewmodel/category_screen_provider.dart';
@@ -6,76 +7,82 @@ import 'package:liquor_brooze_user/viewmodel/root_screen_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
 
-class CategoryDetailsScreen extends StatelessWidget {
-  const CategoryDetailsScreen(
-      {super.key,
-      required this.productName,
-      required this.productImageUrl,
-      required this.productPrice,
-      required this.productQuantity,
-      required this.index});
+class CategoryDetailsScreen extends StatefulWidget {
+  const CategoryDetailsScreen({super.key, required this.productId});
 
-  final int index;
-  final String productName;
-  final String productImageUrl;
-  final String productPrice;
-  final int productQuantity;
+  final String productId;
+
+  @override
+  State<CategoryDetailsScreen> createState() => _CategoryDetailsScreenState();
+}
+
+class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context
+          .read<CategoryScreenProvider>()
+          .getProductDetails(widget.productId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final double itemWidth = size.width / 1.8;
+    final productDetails = Provider.of<CategoryScreenProvider>(context);
     return Scaffold(
       backgroundColor: AppColor.lightTextColor,
       appBar: AppBar(
         title: Text(
-          productName,
+          "${productDetails.productDetailsApiResModel.product?.productName}",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             fontFamily: 'Monserat',
           ),
         ),
-        actions: [
-          context
-                      .watch<CategoryScreenProvider>()
-                      .categoryItems[index]
-                      .itemQuantity >
-                  0
-              ? Stack(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        context.read<RootScreenProvider>().setScreenIndex(3);
-                      },
-                      icon: Icon(Icons.shopping_cart_outlined),
-                    ),
-                    if (context
-                            .read<CategoryScreenProvider>()
-                            .totalCartQuantity >
-                        0)
-                      Positioned(
-                        right: 8,
-                        top: 0,
-                        child: badges.Badge(
-                          badgeContent: Text(
-                            context
-                                .read<CategoryScreenProvider>()
-                                .totalCartQuantity
-                                .toString(),
-                            style: TextStyle(
-                                color: AppColor.lightTextColor, fontSize: 12),
-                          ),
-                          badgeStyle: badges.BadgeStyle(
-                            badgeColor: AppColor.primaryColor,
-                          ),
-                        ),
-                      ),
-                  ],
-                )
-              : SizedBox(),
-        ],
+        // actions: [
+        //   context
+        //               .watch<CategoryScreenProvider>()
+        //               .categoryItems[widget.index]
+        //               .itemQuantity >
+        //           0
+        //       ? Stack(
+        //           children: [
+        //             IconButton(
+        //               onPressed: () {
+        //                 Navigator.pop(context);
+        //                 context.read<RootScreenProvider>().setScreenIndex(3);
+        //               },
+        //               icon: Icon(Icons.shopping_cart_outlined),
+        //             ),
+        //             if (context
+        //                     .read<CategoryScreenProvider>()
+        //                     .totalCartQuantity >
+        //                 0)
+        //               Positioned(
+        //                 right: 8,
+        //                 top: 0,
+        //                 child: badges.Badge(
+        //                   badgeContent: Text(
+        //                     context
+        //                         .read<CategoryScreenProvider>()
+        //                         .totalCartQuantity
+        //                         .toString(),
+        //                     style: TextStyle(
+        //                         color: AppColor.lightTextColor, fontSize: 12),
+        //                   ),
+        //                   badgeStyle: badges.BadgeStyle(
+        //                     badgeColor: AppColor.primaryColor,
+        //                   ),
+        //                 ),
+        //               ),
+        //           ],
+        //         )
+        //       : SizedBox(),
+        // ],
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -89,10 +96,10 @@ class CategoryDetailsScreen extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
                   child: Image.network(
-                    productImageUrl, // Replace with actual image URL
+                    "${productDetails.productDetailsApiResModel.product?.productImage}", // Replace with actual image URL
                     height: 200,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
@@ -100,7 +107,7 @@ class CategoryDetailsScreen extends StatelessWidget {
 
               /// Product Title
               Text(
-                'MUSCLEBLAZE 100% Clean Raw Whey Concentrate, Light & Clean, Easy to Digest Whey Protein (500 g, Unflavored)',
+                '${productDetails.productDetailsApiResModel.product?.productName}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -109,11 +116,25 @@ class CategoryDetailsScreen extends StatelessWidget {
               ),
               SizedBox(height: 10),
 
+              /// Product Description
+              Html(
+                data: productDetails
+                    .productDetailsApiResModel.product?.description,
+                style: {
+                  "body": Style(
+                    fontSize: FontSize(14),
+                    color: Colors.grey[800],
+                    fontFamily: 'Monserat',
+                    maxLines: 2,
+                  ),
+                },
+              ),
+
               /// Product Price
               Container(
                 padding: EdgeInsets.all(8),
                 child: Text(
-                  productPrice,
+                  "£ ${productDetails.productDetailsApiResModel.product?.regulerPrice}",
                   style: TextStyle(
                     color: AppColor.darkTextColor,
                     fontSize: 22,
@@ -331,67 +352,69 @@ class CategoryDetailsScreen extends StatelessWidget {
       ),
       bottomNavigationBar: Consumer<CategoryScreenProvider>(
           builder: (context, categoryProvider, child) {
-        return categoryProvider.categoryItems[index].itemQuantity > 0
-            ? Container(
-                width: itemWidth,
-                height: 50,
-                margin: EdgeInsets.only(bottom: 14, left: 16, right: 16),
-                decoration: BoxDecoration(
-                  color: AppColor.primaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    /// Decrease Quantity
-                    InkWell(
-                      onTap: () {
-                        categoryProvider.decreaseQuantity(index);
-                      },
-                      child: Icon(
-                        Icons.remove,
-                        color: Colors.white,
-                      ),
-                    ),
+        return
+            // categoryProvider.categoryItems[widget.index].itemQuantity > 0
+            //     ? Container(
+            //         width: itemWidth,
+            //         height: 50,
+            //         margin: EdgeInsets.only(bottom: 14, left: 16, right: 16),
+            //         decoration: BoxDecoration(
+            //           color: AppColor.primaryColor,
+            //           borderRadius: BorderRadius.circular(10),
+            //         ),
+            //         child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //           children: [
+            //             /// Decrease Quantity
+            //             InkWell(
+            //               onTap: () {
+            //                 categoryProvider.decreaseQuantity(widget.index);
+            //               },
+            //               child: Icon(
+            //                 Icons.remove,
+            //                 color: Colors.white,
+            //               ),
+            //             ),
 
-                    /// Quantity
-                    Text(
-                      categoryProvider.categoryItems[index].itemQuantity
-                          .toString(),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
+            //             /// Quantity
+            //             Text(
+            //               categoryProvider.categoryItems[widget.index].itemQuantity
+            //                   .toString(),
+            //               style: TextStyle(
+            //                 color: Colors.white,
+            //                 fontSize: 16,
+            //               ),
+            //             ),
 
-                    /// Increase Quantity
-                    InkWell(
-                      onTap: () {
-                        categoryProvider.increaseQuantity(index);
-                      },
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : Container(
-                height: 50,
-                margin: EdgeInsets.only(bottom: 14, left: 16, right: 16),
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.grey.shade300)),
-                ),
-                child: CommonButton(
-                  width: double.infinity,
-                  buttonText: 'Add to Cart',
-                  buttonColor: AppColor.primaryColor,
-                  onTap: () {
-                    categoryProvider.addToCart(index);
-                  },
-                ),
-              );
+            //             /// Increase Quantity
+            //             InkWell(
+            //               onTap: () {
+            //                 categoryProvider.increaseQuantity(widget.index);
+            //               },
+            //               child: Icon(
+            //                 Icons.add,
+            //                 color: Colors.white,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       )
+            //     :
+            Container(
+          height: 50,
+          margin: EdgeInsets.only(bottom: 14, left: 16, right: 16),
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: Colors.grey.shade300)),
+          ),
+          child: CommonButton(
+            width: double.infinity,
+            buttonText: 'Add to Cart',
+            buttonColor: AppColor.primaryColor,
+            onTap: () {
+              // categoryProvider.addToCart(widget.index);
+            },
+          ),
+        );
       }),
     );
   }
